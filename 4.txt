@@ -1,0 +1,136 @@
+# -----FASHION MNIST
+
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from keras.datasets import fashion_mnist
+from keras.models import Sequential
+from keras.layers import Dense
+from sklearn.metrics import accuracy_score
+
+# Load the MNIST Fashion dataset
+(X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
+
+# Dataset description
+print("Dataset Description:")
+print("Training samples:", X_train.shape[0])
+print("Testing samples:", X_test.shape[0])
+print("Image shape:", X_train.shape[1:])
+
+# Map label indices to class names
+class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+
+# Dataset visualization
+fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+axes = axes.flatten()
+
+for i, ax in enumerate(axes):
+    ax.imshow(X_train[i], cmap='gray')
+    ax.axis('off')
+    ax.set_title(class_names[y_train[i]])
+
+plt.tight_layout()
+plt.show()
+
+# Preprocess the data
+X_train = X_train.reshape(-1, 28 * 28) / 255.0
+X_test = X_test.reshape(-1, 28 * 28) / 255.0
+
+# Create the neural network model
+model = Sequential()
+model.add(Dense(256, activation='relu', input_shape=(28 * 28,)))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(10, activation='softmax'))
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
+
+# Evaluate the model
+loss, accuracy = model.evaluate(X_test, y_test)
+print("Test Loss:", loss)
+print("Test Accuracy:", accuracy)
+
+# Plot the training and validation loss
+plt.figure(figsize=(8, 5))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Training and Validation Loss')
+plt.legend()
+plt.show()
+
+# Plot the training and validation accuracy
+plt.figure(figsize=(8, 5))
+plt.plot(history.history['accuracy'], label='Training Accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.legend()
+plt.show()
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Calculate the accuracy of the model
+score = model.evaluate(X_test,y_test,verbose=0)
+print("Test Loss", score[0])
+print("Test Accuracy", score[1])
+
+
+--Classification is a supervised learning technique in machine learning that involves categorizing data into predefined classes based on features. It is used to predict the class of new, unseen data by learning patterns from labeled training data. For example, classifying emails as spam or not, diagnosing diseases based on medical records, or categorizing images based on visual features. Classification algorithms vary in complexity, from simple models like decision trees to complex ones like neural networks. In deep neural networks, classification tasks involve predicting the class of input based on its features, such as using a convolutional neural network to classify handwritten digits in the MNIST dataset.
+
+--Convolutional Neural Networks (CNNs) are a type of neural network commonly used for image classification tasks. They are specifically designed to automatically learn and extract features from input images.
+
+In a typical CNN architecture for image classification, there are multiple layers, including convolutional layers, pooling layers, and fully connected layers. The input to the network is an image, and the output is a probability distribution over the possible classes.
+
+The convolutional layers in a CNN apply filters to the input image, identifying specific patterns and features. Each filter produces a feature map that highlights areas of the image that match the filter. These filters are learned during training, allowing the network to automatically learn relevant features.
+
+Pooling layers in a CNN downsample the feature maps, reducing the spatial dimensions of the data. This helps to decrease the number of parameters in the network and make the features more robust to small variations in the input image.
+
+The fully connected layers take the flattened output from the last pooling layer and perform the final classification task by outputting a probability distribution over the possible classes.
+
+During training, the network learns the optimal values of the filters and parameters by minimizing a loss function. This is typically done using optimization algorithms like stochastic gradient descent.
+
+Once trained, the CNN can be used to classify new images by passing them through the network and computing the output probability distribution, indicating the predicted class of the input image.
+CNNs, or Convolutional Neural Networks, have diverse applications across various fields:
+
+Image classification: CNNs excel at categorizing objects in images and recognizing faces.
+Object detection: CNNs can identify the location of objects in images or videos by drawing bounding boxes around them.
+Semantic segmentation: CNNs can partition images into segments and assign semantic labels to each segment (e.g., "road," "sky," "building").
+Natural language processing: CNNs can perform tasks like sentiment analysis and text classification in natural language processing.
+Medical imaging: CNNs aid in diagnosing diseases through X-rays and identifying tumors in MRI scans.
+Autonomous vehicles: CNNs play a crucial role in tasks like object detection and lane detection for autonomous vehicles.
+
+--Deep neural networks using CNNs for classification tasks work by automatically extracting features from input images and using those features to make predictions. Here's a summary of how they operate:
+
+Input layer: The network takes in the image data as input.
+Convolutional layers: Filters are applied to extract relevant features, producing feature maps.
+Activation functions: Non-linearities are introduced to the output of convolutional layers.
+Pooling layers: Feature maps are downscaled to reduce spatial dimensions.
+Dropout layer: Randomly drops out some neurons during training to prevent overfitting.
+Fully connected layers: Flattened output is used for classification, providing probability distribution over classes.
+Softmax activation function: Produces a probability distribution over the classes.
+Loss function: Measures the difference between predicted probabilities and actual labels.
+Optimization: Parameters are adjusted using an optimization algorithm to minimize the loss function.
+Training: Network is trained on a labeled dataset, optimizing parameter values.
+Prediction: Trained network classifies new images by passing them through the network and computing the output probability distribution.
+
+
+--The MNIST Fashion dataset is a collection of 70,000 grayscale images of 28x28 pixels representing 10 different categories of clothing and accessories. It is a popular benchmark for testing image classification algorithms and is considered more challenging than the original MNIST dataset of handwritten digits.
+
+To perform Convolutional Neural Network (CNN) on the MNIST Fashion dataset, the following steps are typically followed:
+
+Import the necessary libraries, including TensorFlow, Keras, NumPy, and Matplotlib.
+Load the dataset using Keras' built-in function, keras.datasets.fashion_mnist.load_data(), which provides the training and testing sets.
+Preprocess the data by normalizing the pixel values between 0 and 1 and reshaping the images to (28, 28, 1) for compatibility with the CNN.
+Define the CNN architecture, including the number and size of filters, activation functions, and pooling layers.
+Compile the model by specifying the loss function, optimizer, and evaluation metrics.
+Train the CNN on the training set using the fit() function, specifying the number of epochs and batch size.
+Evaluate the performance of the model on the testing set using the evaluate() function, which provides metrics such as accuracy and loss.
+Optionally, use the trained model to make predictions on new images using the predict() function.
+These steps enable the use of CNNs to classify the MNIST Fashion dataset accurately and are commonly used in the machine learning community for research and educational purposes.
