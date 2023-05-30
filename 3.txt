@@ -1,0 +1,113 @@
+#  ******************************* OCR MULTICLASS CLASSIFICATION USING DNN ****************************************************************************
+
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense
+
+
+# Load the MNIST dataset
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+# Dataset description
+print("Dataset Description:")
+print("Training samples:", X_train.shape[0])
+print("Testing samples:", X_test.shape[0])
+print("Image shape:", X_train.shape[1:])
+
+# Dataset visualization
+fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+axes = axes.flatten()
+
+for i, ax in enumerate(axes):
+    ax.imshow(X_train[i], cmap='gray')
+    ax.axis('off')
+    ax.set_title(f"Label: {y_train[i]}")
+
+plt.tight_layout()
+plt.show()
+
+# Print dataset head and tail
+print("Dataset Head:")
+print(X_train[:5])
+print(y_train[:5])
+
+print("Dataset Tail:")
+print(X_train[-5:])
+print(y_train[-5:])
+
+# Preprocess the data
+X_train = X_train.reshape(-1, 28 * 28) / 255.0
+X_test = X_test.reshape(-1, 28 * 28) / 255.0
+
+# Create the neural network model
+model = Sequential()
+model.add(Dense(256, activation='relu', input_shape=(28 * 28,)))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(10, activation='softmax'))
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
+
+
+
+# Plot the training and validation loss
+plt.figure(figsize=(8, 5))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Training and Validation Loss')
+plt.legend()
+plt.show()
+
+# Plot the training and validation accuracy
+plt.figure(figsize=(8, 5))
+plt.plot(history.history['accuracy'], label='Training Accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.legend()
+plt.show()
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+b
+# Evaluate the model
+loss, accuracy = model.evaluate(X_test, y_test)
+print("Test Loss:", loss)
+print("Test Accuracy:", accuracy)
+
+# Visualization of predictions
+fig, axes = plt.subplots(2, 2, figsize=(15, 15))
+axes = axes.flatten()
+
+for i, ax in enumerate(axes):
+    ax.imshow(X_test[i].reshape(28, 28), cmap='gray')
+    ax.axis('off')
+    ax.set_title(f"Pred: {y_pred[i]}, True: {y_test[i]}")
+
+plt.tight_layout()
+plt.show()
+
+
+
+Multiclass classification, also known as multiclass classification or multiclass classification problem, involves assigning input data to one of three or more classes or categories. It is different from binary classification, where the goal is to assign data to one of two classes. In multiclass classification, each input sample has a single class label, and the objective is to build a model that accurately predicts the correct class for new, unseen data.
+
+Various machine learning algorithms can be used for multiclass classification, including decision trees, support vector machines, and deep neural networks. For example, in image classification, the task is to classify images into different categories such as animals, vehicles, or buildings. In text classification, the goal is to classify text documents into various categories such as news topics or sentiment analysis.
+
+Multiclass classification problems are common in many domains and require algorithms that can handle multiple classes effectively. Machine learning techniques are applied to learn patterns and relationships in the data to make accurate predictions for unseen instances.
+
+
+few examples of multiclass classification problems:
+
+Image classification: Classifying images into categories such as cats, dogs, and birds.
+Text classification: Categorizing news articles into topics like politics, sports, and entertainment.
+Disease diagnosis: Identifying diseases like diabetes, cancer, or heart disease based on symptoms and medical history.
+Speech recognition: Transcribing spoken words into text, recognizing words in different languages or dialects.
+Credit risk analysis: Assessing loan applicants as low risk, medium risk, or high risk based on credit score and other factors.

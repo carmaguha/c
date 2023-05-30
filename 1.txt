@@ -1,0 +1,84 @@
+# ---------------------------------------------------------------------------- BOSTON HOUSING LINEAR REFRESSION DNN -----------------------------------------------
+
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from keras.datasets import boston_housing
+from keras.models import Sequential
+from keras.layers import Dense
+from sklearn.metrics import mean_squared_error
+
+# Load the Boston Housing dataset
+(X_train, y_train), (X_test, y_test) = boston_housing.load_data()
+
+# Dataset description
+print("Dataset Description:")
+print("Training samples:", X_train.shape[0])
+print("Testing samples:", X_test.shape[0])
+print("Number of features:", X_train.shape[1])
+
+# Convert the data into a pandas DataFrame
+column_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
+df = pd.DataFrame(np.concatenate((X_train, y_train.reshape(-1, 1)), axis=1), columns=column_names)
+
+# Dataset head and tail 
+print("Dataset Head:")
+print(df.head())
+
+print("Dataset Tail:")
+print(df.tail())
+
+# Preprocess the data
+mean = X_train.mean(axis=0)
+std = X_train.std(axis=0)
+X_train = (X_train - mean) / std
+X_test = (X_test - mean) / std
+
+# Create the neural network model
+model = Sequential()
+model.add(Dense(64, activation='relu', input_shape=(X_train.shape[1],)))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mean_squared_error')
+model.summary()
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.2, verbose=0)
+
+# Evaluate the model
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+print("Mean Squared Error:", mse)
+
+
+
+Linear regression is a statistical technique used to understand and model the relationship between a dependent variable and one or more independent variables. It assumes a linear relationship between these variables and aims to find the best-fitting line that represents the data.
+
+In simple terms, linear regression tries to find a straight line that best fits the given data points. The line is characterized by its slope and intercept, which are estimated using mathematical methods. The slope represents the change in the dependent variable for a unit change in the independent variable, while the intercept represents the value of the dependent variable when the independent variable is zero.
+
+Linear regression can be applied to various fields and problems. It is commonly used in economics, finance, social sciences, and other disciplines to analyze and predict outcomes based on historical data. For example, it can be used to predict housing prices based on factors like square footage, location, and number of bedrooms.
+
+It's important to note that deep neural networks, although also used for prediction and classification tasks, are a separate concept from traditional linear regression. Deep neural networks involve multiple layers of interconnected neurons and are capable of learning complex patterns in data. Linear regression using deep neural networks combines the linear regression principles with the power of deep learning algorithms to handle more intricate relationships between variables and make accurate predictions or classifications.
+
+dnn:
+A deep neural network is a machine learning algorithm inspired by the human brain's structure and function. It consists of interconnected layers of artificial neurons that process data to make predictions or classifications. Each layer performs specific processing and passes the results to the next layer. The input layer receives the data, the output layer produces the final results, and the hidden layers extract complex features. Deep neural networks are trained using backpropagation, adjusting node weights and biases based on the error between predicted and actual outputs. They excel in tasks like image recognition, speech processing, and recommendation systems by learning from large datasets and automatically extracting relevant features. They are powerful tools for solving complex problems in various domains.
+
+How Deep Neural Network Work-
+
+A deep neural network works by processing data through multiple interconnected layers of artificial neurons. Each layer performs specific operations on the data and passes the results to the next layer. The network learns from the data by adjusting the weights and biases of the neurons based on the error between predicted and actual outputs. This learning process, known as backpropagation, is repeated iteratively until the network achieves a desired level of accuracy. Deep neural networks excel in tasks such as image recognition, speech processing, and natural language processing by automatically extracting complex features from the data. They are powerful tools for solving complex problems by learning from large datasets and making accurate predictions or classifications.
+
+The Boston House Price Prediction dataset is a commonly used dataset in machine learning for regression analysis. It includes data on 506 houses located in Boston, Massachusetts, USA. The objective of this dataset is to predict the median value of owner-occupied homes, measured in thousands of dollars. It serves as a benchmark dataset for evaluating regression algorithms and understanding housing price trends.
+The dataset includes 13 input features, which are:
+CRIM: per capita crime rate by town
+ZN: proportion of residential land zoned for lots over 25,000 sq.ft.
+INDUS: proportion of non-retail business acres per town
+CHAS: Charles River dummy variable (1 if tract bounds river; 0 otherwise)
+NOX: nitric oxides concentration (parts per 10 million)
+RM: average number of rooms per dwelling
+AGE: proportion of owner-occupied units built prior to 1940
+DIS: weighted distances to five Boston employment centers
+RAD: index of accessibility to radial highways
+TAX: full-value property-tax rate per $10,000
+PTRATIO: pupil-teacher ratio by town
+B: 1000(Bk - 0.63)^2 where Bk is the proportion of black people by town
+LSTAT: % lower status of the population

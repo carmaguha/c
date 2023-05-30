@@ -1,0 +1,108 @@
+# ----BINARY CLASSIFICATION POSITIVE NEGATIVE REVIEW IMDB WITH VISUALIZATION-------------------------------------
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from keras.datasets import imdb
+from keras.utils import pad_sequences
+from keras.models import Sequential
+from keras.layers import Dense
+
+
+# Load the IMDB dataset
+(X_train, y_train), (X_test, y_test) = imdb.load_data(num_words=10000)
+
+# Preprocess the data
+max_len = 200  # Maximum sequence length
+X_train = pad_sequences(X_train, maxlen=max_len)
+X_test = pad_sequences(X_test, maxlen=max_len)
+
+# Display a few samples from the dataset
+word_index = imdb.get_word_index()
+reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
+
+def decode_review(review):
+    return ' '.join([reverse_word_index.get(i - 3,"-" ) for i in review])
+
+print("Sample Positive Review:")
+print(decode_review(X_train[6]))
+print("Sample Negative Review:")
+print(decode_review(X_train[5]))
+
+# Create the deep neural network model
+model = Sequential()
+model.add(Dense(256, activation='relu', input_shape=(max_len,)))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(1, activation='sigmoid'))
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Calculate the accuracy of the model
+score = model.evaluate(X_test,y_test,verbose=0)
+print("Test Loss", score[0])
+print("Test Accuracy", score[1])
+
+# Plot the training and validation accuracy
+plt.figure(figsize=(8, 5))
+plt.plot(history.history['accuracy'], label='Training Accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.legend()
+plt.show()
+
+# Visualize a few sample predictions
+fig, axes = plt.subplots(2, 5, figsize=(12, 6))
+axes = axes.flatten()
+
+for i, ax in enumerate(axes):
+    index = np.random.randint(0, len(X_test))
+    review = decode_review(X_test[index])
+    pred_label = 'Positive' if y_pred[index] == 1 else 'Negative'
+    true_label = 'Positive' if y_test[index] == 1 else 'Negative'
+    color = 'green' if pred_label == true_label else 'red'
+    ax.text(0.5, 0.5, f"Pred: {pred_label}\nTrue: {true_label}", color=color, fontsize=12, ha='center')
+    ax.axis('off')
+
+plt.tight_layout()
+plt.show()
+
+
+Classification is a supervised learning technique in machine learning where data is categorized into predefined classes based on their features. It involves training a model on labeled data to learn patterns and associations between input features and class labels. The trained model can then be used to classify new, unseen data into one of the known classes. Classification is widely used in various applications such as spam detection, disease diagnosis, and image recognition. Different classification algorithms, ranging from simple to complex, can be employed depending on the data and desired accuracy. In deep neural networks, classification is performed using techniques like convolutional neural networks (CNNs) for tasks such as image classification.
+
+How Deep Neural Network Work on Classification-
+ChatGPT
+Deep neural networks work on classification tasks by learning to map input data to corresponding class labels. Here's a simplified explanation of how they work:
+
+Input Layer: The input layer receives the input data, which could be images, text, or any other form of structured or unstructured data.
+
+Hidden Layers: Deep neural networks consist of multiple hidden layers, where each layer contains interconnected nodes or neurons. Each neuron applies a mathematical transformation to the input data and passes the result to the next layer.
+
+Activation Function: Each neuron in the hidden layers applies an activation function, which introduces non-linearity into the network. This allows the network to learn complex patterns and relationships in the data.
+
+Weight and Bias: Each connection between neurons in different layers is assigned a weight and bias, which determine the strength and direction of the connection. During training, these weights and biases are adjusted iteratively to minimize the error between predicted and actual class labels.
+
+Output Layer: The final layer of the network is the output layer, which produces the predicted class probabilities or directly outputs the class label. The activation function used in the output layer depends on the type of classification problem (e.g., softmax function for multi-class classification).
+
+Training: The network is trained using a labeled dataset, where the input data is associated with corresponding class labels. During training, the network adjusts its weights and biases using optimization algorithms like gradient descent to minimize the prediction error.
+
+Forward and Backward Propagation: During training, the network performs forward propagation, where input data is fed through the layers, and predictions are made. The prediction error is then propagated backward through the network using backpropagation, and the weights and biases are updated based on the error gradient.
+
+Iterative Training: The training process is repeated for multiple epochs, where each epoch consists of one pass through the entire dataset. This allows the network to improve its predictions gradually by fine-tuning the weights and biases.
+
+Inference: Once the network is trained, it can be used for classification on new, unseen data. The input data is fed through the network, and the output layer produces the predicted class label or probabilities.
+
+
+
+The IMDB dataset is a collection of 50,000 movie reviews from the IMDB website. It is split into 25,000 reviews for training and 25,000 reviews for testing. Each review is represented as a sequence of words, with integer indices assigned to each word based on its frequency in the dataset. The labels for the reviews are binary, indicating whether the review is positive or negative.
+
+The IMDB dataset is commonly used for sentiment analysis and text classification tasks, where the objective is to classify the movie reviews as either positive or negative based on their content. Traditional machine learning approaches can struggle with this dataset due to the subjective nature of the reviews and the complexity of the language used.
+
+Deep learning approaches, particularly deep neural networks, have achieved impressive performance on the IMDB dataset. They are able to automatically learn relevant features from the raw text data and effectively map them to the correct output class. This dataset serves as a benchmark for natural language processing and machine learning research, as it provides a valuable source of labeled text data for training and evaluating deep learning models.
