@@ -1,0 +1,94 @@
+
+//************ min max *********************************************************************************************************************
+
+
+#include <iostream>
+//#include <vector>
+#include <omp.h>
+#include <climits>
+using namespace std;
+void min_reduction(int arr[], int n) {
+  int min_value = INT_MAX;
+  #pragma omp parallel for reduction(min: min_value)
+  for (int i = 0; i < n; i++) {
+	if (arr[i] < min_value) {
+  	min_value = arr[i];
+	}
+  }
+  cout << "Minimum value: " << min_value << endl;
+}
+
+void max_reduction(int arr[], int n) {
+  int max_value = INT_MIN;
+  #pragma omp parallel for reduction(max: max_value)
+  for (int i = 0; i < n; i++) {
+	if (arr[i] > max_value) {
+  	max_value = arr[i];
+	}
+  }
+  cout << "Maximum value: " << max_value << endl;
+}
+
+void sum_reduction(int arr[], int n) {
+  int sum = 0;
+   #pragma omp parallel for reduction(+: sum)
+   for (int i = 0; i < n; i++) {
+	sum += arr[i];
+  }
+  cout << "Sum: " << sum << endl;
+}
+
+void average_reduction(int arr[], int n) {
+  int sum = 0;
+  #pragma omp parallel for reduction(+: sum)
+  for (int i = 0; i < n; i++) {
+	sum += arr[i];
+  }
+  cout << "Average: " << (double)sum / (n-1) << endl;
+}
+
+int main() {
+    int *arr,n;
+    cout<<"\n enter total no of elements=>";
+    cin>>n;
+    arr=new int[n];
+    cout<<"\n enter elements=>";
+    for(int i=0;i<n;i++)
+    {
+   	 cin>>arr[i];
+    }
+
+//   int arr[] = {5, 2, 9, 1, 7, 6, 8, 3, 4};
+//   int n = size(arr);
+
+  min_reduction(arr, n);
+  max_reduction(arr, n);
+  sum_reduction(arr, n);
+  average_reduction(arr, n);
+}
+
+Min_Reduction function:
+This function takes a vector of integers as input and finds the minimum value in the vector using parallel reduction.
+It utilizes the OpenMP reduction clause with the "min" operator to determine the minimum value across all threads.
+Each thread finds the minimum value in its assigned portion of the vector, and these minimum values are reduced to obtain the overall minimum value of the entire vector.
+The final minimum value is then printed to the console.
+Max_Reduction function:
+This function takes a vector of integers as input and finds the maximum value in the vector using parallel reduction.
+Similar to the Min_Reduction function, it employs the OpenMP reduction clause with the "max" operator to identify the maximum value across all threads.
+Each thread finds the maximum value in its portion of the vector, and these maximum values are reduced to obtain the overall maximum value.
+The final maximum value is printed to the console.
+Sum_Reduction function:
+This function takes a vector of integers as input and calculates the sum of all the values in the vector using parallel reduction.
+It utilizes the OpenMP reduction clause with the "+" operator to perform the summation across all threads.
+Each thread calculates the sum of the values in its assigned portion of the vector, and these partial sums are reduced to obtain the overall sum.
+The final sum is then printed to the console.
+Average_Reduction function:
+This function takes a vector of integers as input and computes the average of all the values in the vector using parallel reduction.
+It also employs the OpenMP reduction clause with the "+" operator to calculate the sum across all threads.
+Each thread calculates the sum of the values in its assigned portion of the vector, and these partial sums are reduced to obtain the overall sum.
+The final sum is divided by the size of the array to obtain the average.
+The final average value is then printed to the console.
+Main Function:
+The main function initializes a vector of integers with some values.
+It calls the Min_Reduction, Max_Reduction, Sum_Reduction, and Average_Reduction functions on the input vector to find the corresponding values.
+Finally, the program prints the final minimum, maximum, sum, and average values to the console.

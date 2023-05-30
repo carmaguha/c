@@ -1,0 +1,105 @@
+
+//********** ------------------------------------------Bubble Sort-------------------------------------------- ********
+
+#include<iostream>
+#include<stdlib.h>
+#include<omp.h>
+using namespace std;
+
+void bubble(int *, int);
+void swap(int &, int &);
+
+
+void bubble(int *a, int n)
+{
+    for(  int i = 0;  i < n;  i++ )
+     {  	 
+   	 int first = i % 2; 	 
+
+   	 #pragma omp parallel for shared(a,first)
+   	 for(  int j = first;  j < n-1;  j += 2  )
+   	   {  	 
+   		 if(  a[ j ]  >  a[ j+1 ]  )
+   		  {  	 
+     			 swap(  a[ j ],  a[ j+1 ]  );
+   		  }  	 
+   		   }  	 
+     }
+}
+
+
+void swap(int &a, int &b)
+{
+
+    int test;
+    test=a;
+    a=b;
+    b=test;
+
+}
+
+int main()
+{
+
+    int *a,n;
+    cout<<"\n enter total no of elements=>";
+    cin>>n;
+    a=new int[n];
+    cout<<"\n enter elements=>";
+    for(int i=0;i<n;i++)
+    {
+   	 cin>>a[i];
+    }
+    
+    bubble(a,n);
+    
+    cout<<"\n sorted array is=>";
+    for(int i=0;i<n;i++)
+    {
+   	 cout<<a[i]<<endl;
+    }
+
+
+return 0;
+}
+
+What is Bubble Sort?
+Bubble Sort is a simple sorting algorithm that works by repeatedly swapping adjacent elements if they are
+in the wrong order. It is called "bubble" sort because the algorithm moves the larger elements towards the
+end of the array in a manner that resembles the rising of bubbles in a liquid.
+The basic algorithm of Bubble Sort is as follows:
+1. Start at the beginning of the array.
+2. Compare the first two elements. If the first element is greater than the second element, swap them.
+3. Move to the next pair of elements and repeat step 2.
+4. Continue the process until the end of the array is reached.
+5. If any swaps were made in step 2-4, repeat the process from step 1.
+The time complexity of Bubble Sort is O(n^2), which makes it inefficient for large lists. However, it
+has the advantage of being easy to understand and implement, and it is useful for educational purposes
+and for sorting small datasets.
+
+--Concept of OpenMP
+● OpenMP (Open Multi-Processing) is an application programming interface (API) that facilitates shared-memory parallel programming in C, C++, and Fortran. It enables the creation of parallel programs that can be executed on multicore processors, multiprocessor systems, and parallel computing clusters.
+
+● OpenMP offers a set of directives and functions that can be inserted into the source code of a program, allowing for the parallelization of its execution. These directives are user-friendly and straightforward, and they can be applied to various program constructs such as loops, sections, and functions. When the program is compiled, the compiler generates parallel code that can run concurrently on multiple processors.
+
+● OpenMP is specifically designed to harness the advantages of the shared-memory architecture found in modern processors. In this architecture, multiple processor cores can access the same memory. OpenMP follows a fork-join model of parallel execution. The master thread initiates the parallel region of the code by forking multiple worker threads. These worker threads execute the parallel portion of the code concurrently. Once all the threads have completed their tasks, the master thread continues with the sequential part of the code.
+
+How Parallel Bubble Sort Work
+● Parallel Bubble Sort is a modification of the classic Bubble Sort algorithm that takes advantage of
+parallel processing to speed up the sorting process.
+● In parallel Bubble Sort, the list of elements is divided into multiple sublists that are sorted
+concurrently by multiple threads. Each thread sorts its sublist using the regular Bubble Sort
+algorithm. When all sublists have been sorted, they are merged together to form the final sorted
+list.
+● The parallelization of the algorithm is achieved using OpenMP, a programming API that supports
+parallel processing in C++, Fortran, and other programming languages. OpenMP provides a set of
+compiler directives that allow developers to specify which parts of the code can be executed in
+parallel.
+● In the parallel Bubble Sort algorithm, the main loop that iterates over the list of elements is
+divided into multiple iterations that are executed concurrently by multiple threads. Each thread
+sorts a subset of the list, and the threads synchronize their work at the end of each iteration to
+ensure that the elements are properly ordered.
+● Parallel Bubble Sort can provide a significant speedup over the regular Bubble Sort algorithm,
+especially when sorting large datasets on multi-core processors. However, the speedup is limited
+by the overhead of thread creation and synchronization, and it may not be worth the effort for
+small datasets or when using a single-core processor.

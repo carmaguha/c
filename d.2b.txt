@@ -1,0 +1,132 @@
+// --------------------------------------------------- Merge Sort --------------------------------------------------
+#include<iostream>
+#include<stdlib.h>
+#include<omp.h>
+using namespace std;
+
+
+void mergesort(int a[],int i,int j);
+void merge(int a[],int i1,int j1,int i2,int j2);
+
+void mergesort(int a[],int i,int j)
+{
+	int mid;
+	if(i<j)
+	{
+    	mid=(i+j)/2;
+   	 
+    	#pragma omp parallel sections
+    	{
+
+        	#pragma omp section
+        	{
+            	mergesort(a,i,mid);   	 
+        	}
+
+        	#pragma omp section
+        	{
+            	mergesort(a,mid+1,j);    
+        	}
+    	}
+
+    	merge(a,i,mid,mid+1,j);    
+	}
+
+}
+ 
+void merge(int a[],int i1,int j1,int i2,int j2)
+{
+	int temp[1000];    
+	int i,j,k;
+	i=i1;    
+	j=i2;    
+	k=0;
+    
+	while(i<=j1 && j<=j2)    
+	{
+    	if(a[i]<a[j])
+    	{
+        	temp[k++]=a[i++];
+    	}
+    	else
+    	{
+        	temp[k++]=a[j++];
+    }    
+	}
+    
+	while(i<=j1)    
+	{
+    	temp[k++]=a[i++];
+	}
+   	 
+	while(j<=j2)    
+	{
+    	temp[k++]=a[j++];
+	}
+   	 
+	for(i=i1,j=0;i<=j2;i++,j++)
+	{
+    	a[i]=temp[j];
+	}    
+}
+
+
+int main()
+{
+	int *a,n,i;
+	cout<<"\n enter total no of elements=>";
+	cin>>n;
+	a= new int[n];
+
+	cout<<"\n enter elements=>";
+	for(i=0;i<n;i++)
+	{
+    	cin>>a[i];
+	}
+   //	 start=.......
+//#pragma omp…..
+	mergesort(a, 0, n-1);
+//          stop…….
+	cout<<"\n sorted array is=>";
+	for(i=0;i<n;i++)
+	{
+    	cout<<"\n"<<a[i];
+	}
+  	// Cout<<Stop-Start
+}
+--What is Merge Sort?
+Merge sort is a sorting algorithm that uses a divide-and-conquer approach to sort an array or a list of
+elements. The algorithm works by recursively dividing the input array into two halves, sorting each half,
+and then merging the sorted halves to produce a sorted output.
+The merge sort algorithm can be broken down into the following steps:
+1. Divide the input array into two halves.
+2. Recursively sort the left half of the array.
+3. Recursively sort the right half of the array.
+4. Merge the two sorted halves into a single sorted output array.
+● The merging step is where the bulk of the work happens in merge sort. The algorithm compares
+the first elements of each sorted half, selects the smaller element, and appends it to the output
+array. This process continues until all elements from both halves have been appended to the output
+array.
+● The time complexity of merge sort is O(n log n), which makes it an efficient sorting algorithm for
+large input arrays. However, merge sort also requires additional memory to store the output array,
+which can make it less suitable for use with limited memory resources.
+
+--Concept of OpenMP
+● OpenMP (Open Multi-Processing) is an application programming interface (API) that facilitates shared-memory parallel programming in C, C++, and Fortran. It enables the creation of parallel programs that can be executed on multicore processors, multiprocessor systems, and parallel computing clusters.
+
+● OpenMP offers a set of directives and functions that can be inserted into the source code of a program, allowing for the parallelization of its execution. These directives are user-friendly and straightforward, and they can be applied to various program constructs such as loops, sections, and functions. When the program is compiled, the compiler generates parallel code that can run concurrently on multiple processors.
+
+● OpenMP is specifically designed to harness the advantages of the shared-memory architecture found in modern processors. In this architecture, multiple processor cores can access the same memory. OpenMP follows a fork-join model of parallel execution. The master thread initiates the parallel region of the code by forking multiple worker threads. These worker threads execute the parallel portion of the code concurrently. Once all the threads have completed their tasks, the master thread continues with the sequential part of the code.
+
+--How Parallel Merge Sort Work
+● Parallel merge sort is an optimized version of the merge sort algorithm that takes advantage of multiple processors or cores to enhance its performance. By dividing the input array into smaller subarrays, parallel merge sort enables parallel sorting using multiple processors or cores. These sorted subarrays are then merged together in parallel to generate the final sorted output.
+
+● The steps involved in parallel merge sort are as follows:
+
+Divide the input array into smaller subarrays.
+Assign each subarray to a separate processor or core for sorting.
+Conduct parallel sorting of each subarray using the merge sort algorithm.
+Merge the sorted subarrays together in parallel to produce the final sorted output.
+● The merging step in parallel merge sort is similar to the sequential merge sort algorithm. However, since the subarrays are sorted in parallel, the merging step can also be executed in parallel using multiple processors or cores. This parallel merging significantly reduces the time required to merge the sorted subarrays and generate the final output.
+
+● Parallel merge sort demonstrates notable performance advantages for large input arrays with a significant number of elements, particularly when executed on hardware equipped with multiple processors or cores. Nevertheless, it involves additional overhead to manage the parallelization, and its performance improvements may be limited for smaller input sizes or when executed on hardware with limited parallel processing capabilities.

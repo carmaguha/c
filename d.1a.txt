@@ -1,0 +1,188 @@
+
+
+//************* ---------------------------------BFS--------------------------------------- ***************
+
+#include<iostream>
+#include<stdlib.h>
+#include<queue>
+using namespace std;
+
+
+class node			#a node in a binary tree
+{
+   public:
+    
+    node *left, *right;		#pointers
+    int data;
+
+};    
+
+class Breadthfs		#insert to  nodes
+{
+ 
+ public:
+ 
+ node *insert(node *, int);
+ void bfs(node *);
+ 
+};
+
+
+node *insert(node *root, int data)		#takes the root node and data as para
+// inserts a node in tree
+{
+
+    if(!root)	#root is NULL (empty tree), a new node created and assigned as the root
+    {
+   	 
+   	 root=new node;
+   	 root->left=NULL;
+   	 root->right=NULL;
+   	 root->data=data;	#data value assigned
+   	 return root;
+    }
+
+    queue<node *> q;	#queue of(pointers to nodes) created
+    q.push(root);
+    
+    while(!q.empty())
+    {
+
+   	 node *temp=q.front();	#in each itn front ele removed , stored in the temp variable.
+   	 q.pop();
+    
+   	 if(temp->left==NULL) #Ifleft child(temp->left) NULL, a new created with the given data value. 
+   	 {
+   		 
+   		 temp->left=new node;
+   		 temp->left->left=NULL;
+   		 temp->left->right=NULL;
+   		 temp->left->data=data;    
+   		 return root;
+   	 }
+   	 else	#else, pushed into the queue for further processing.
+   	 {
+
+   	 q.push(temp->left);
+
+   	 }
+
+   	 if(temp->right==NULL)
+   	 {
+   		 
+   		 temp->right=new node;
+   		 temp->right->left=NULL;
+   		 temp->right->right=NULL;
+   		 temp->right->data=data;    
+   		 return root;
+   	 }
+   	 else
+   	 {
+
+   	 q.push(temp->right);
+
+   	 }
+
+    }
+    
+}
+
+
+void bfs(node *head)		#takes(root) of the tree as a para
+{
+
+   	 queue<node*> q;	#queue to traverse
+   	 q.push(head);
+   	 
+   	 int qSize;
+   	 
+   	 while (!q.empty())
+   	 {
+   		 qSize = q.size();		#to process all the nodes in the current level concurrently
+   		 #pragma omp parallel for
+            	//creates parallel threads
+   		 for (int i = 0; i < qSize; i++)
+   		 {
+   			 node* currNode;
+   			 #pragma omp critical
+   			 {
+   			   currNode = q.front();
+   			   q.pop();
+   			   cout<<"\t"<<currNode->data;
+   			   
+   			 }// prints parent node
+   			 #pragma omp critical	#if the node has left and right children, they are pushed into the queue for further exploration.
+   			 {
+   			 if(currNode->left)// push parent's left node in queue
+   				 q.push(currNode->left);
+   			 if(currNode->right)
+   				 q.push(currNode->right);
+   			 }// push parent's right node in queue   	 
+
+   		 }
+   	 }
+
+}
+
+int main(){
+
+    node *root=NULL;
+    int data;
+    char ans;
+    
+    do
+    {
+   	 cout<<"\n enter data=>";
+   	 cin>>data;
+   	 
+   	 root=insert(root,data);
+    
+   	 cout<<"do you want insert one more node?";
+   	 cin>>ans;
+    
+    }while(ans=='y'||ans=='Y');
+    
+    bfs(root);
+    
+    return 0;
+}
+
+
+
+
+What is BFS?
+BFS stands for Breadth-First Search. It is a graph traversal algorithm used to explore all the nodes of a
+graph or tree systematically, starting from the root node or a specified starting point, and visiting all the
+neighboring nodes at the current depth level before moving on to the next depth level.
+The algorithm uses a queue data structure to keep track of the nodes that need to be visited, and marks
+each visited node to avoid processing it again. The basic idea of the BFS algorithm is to visit all the
+nodes at a given level before moving on to the next level, which ensures that all the nodes are visited in
+breadth-first order.
+
+--Concept of OpenMP
+● OpenMP (Open Multi-Processing) is an application programming interface (API) that facilitates shared-memory parallel programming in C, C++, and Fortran. It enables the creation of parallel programs that can be executed on multicore processors, multiprocessor systems, and parallel computing clusters.
+
+● OpenMP offers a set of directives and functions that can be inserted into the source code of a program, allowing for the parallelization of its execution. These directives are user-friendly and straightforward, and they can be applied to various program constructs such as loops, sections, and functions. When the program is compiled, the compiler generates parallel code that can run concurrently on multiple processors.
+
+● OpenMP is specifically designed to harness the advantages of the shared-memory architecture found in modern processors. In this architecture, multiple processor cores can access the same memory. OpenMP follows a fork-join model of parallel execution. The master thread initiates the parallel region of the code by forking multiple worker threads. These worker threads execute the parallel portion of the code concurrently. Once all the threads have completed their tasks, the master thread continues with the sequential part of the code.
+
+
+How Parallel BFS Work
+Parallel BFS (Breadth-First Search) is an algorithm used to explore all the nodes of a graph or tree 
+systematically in parallel. It is a popular parallel algorithm used for graph traversal in distributed
+computing, shared-memory systems, and parallel clusters.
+The parallel BFS algorithm starts by selecting a root node or a specified starting point, and then
+assigning it to a thread or processor in the system. Each thread maintains a local queue of nodes to be
+visited and marks each visited node to avoid processing it again.
+ The algorithm then proceeds in levels, where each level represents a set of nodes that are at a certain
+distance from the root node. Each thread processes the nodes in its local queue at the current level,
+and then exchanges the nodes that are adjacent to the current level with other threads or processors.
+This is done to ensure that the nodes at the next level are visited by the next iteration of the
+algorithm.
+ The parallel BFS algorithm uses two phases: the computation phase and the communication phase. In
+the computation phase, each thread processes the nodes in its local queue, while in the
+communication phase, the threads exchange the nodes that are adjacent to the current level with other
+threads or processors.
+ The parallel BFS algorithm terminates when all nodes have been visited or when a specified node has
+been found. The result of the algorithm is the set of visited nodes or the shortest path from the root
+node to the target node.

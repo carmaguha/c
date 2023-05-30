@@ -1,0 +1,79 @@
+ ****************** HPC 7 CUDE MATRIX MULTIPLICATION **************************
+ #include <cuda_runtime.h>
+#include <iostream>
+__global__ void matmul(int* A, int* B, int* C, int N) {
+int Row = blockIdx.y*blockDim.y+threadIdx.y;
+int Col = blockIdx.x*blockDim.x+threadIdx.x;
+if (Row < N && Col < N) {
+int Pvalue = 0;
+for (int k = 0; k < N; k++) {
+Pvalue += A[Row*N+k] * B[k*N+Col];
+}
+C[Row*N+Col] = Pvalue;
+}
+}
+int main() {
+int N = 512;
+int size = N * N * sizeof(int);
+int* A, * B, * C;
+int* dev_A, * dev_B, * dev_C;
+cudaMallocHost(&A, size);
+cudaMallocHost(&B, size);
+cudaMallocHost(&C, size);
+cudaMalloc(&dev_A, size);
+cudaMalloc(&dev_B, size);
+cudaMalloc(&dev_C, size);
+// Initialize matrices A and B
+for (int i = 0; i < N; i++) {
+for (int j = 0; j < N; j++) {
+A[i*N+j] = i*N+j;
+B[i*N+j] = j*N+i;
+}
+}
+cudaMemcpy(dev_A, A, size,
+cudaMemcpyHostToDevice);
+cudaMemcpy(dev_B, B, size,
+cudaMemcpyHostToDevice);
+dim3 dimBlock(16, 16);
+dim3 dimGrid(N/dimBlock.x, N/dimBlock.y);
+matmul<<<dimGrid, dimBlock>>>(dev_A, dev_B,
+dev_C, N);
+cudaMemcpy(C, dev_C
+// Print the result
+for (int i = 0; i < 10; i++) {
+for (int j = 0; j < 10; j++) {
+std::cout << C[i*N+j] << " ";
+}
+std::cout << std::endl;
+}
+// Free memory
+cudaFree(dev_A);
+cudaFree(dev_B);
+cudaFree(dev_C);
+cudaFreeHost(A);
+cudaFreeHost(B);
+cudaFreeHost(C);
+return 0;
+
+
+CUDA (Compute Unified Device Architecture) is a platform and programming model created by NVIDIA for parallel computing. It enables developers to harness the computational capabilities of NVIDIA graphics processing units (GPUs) to accelerate various types of computations in applications such as scientific computing, machine learning, and computer vision.
+
+With CUDA, developers have access to a collection of programming interfaces, libraries, and tools that facilitate the creation and execution of parallel code on NVIDIA GPUs. It supports widely-used programming languages like C, C++, and Python, and offers a simplified programming model that abstracts many of the intricate details of GPU architecture.
+
+By leveraging CUDA, developers can take advantage of the immense parallelism and high computational power of GPUs to speed up demanding tasks like matrix operations, image processing, and deep learning. It opens up opportunities for faster and more efficient computation, enabling applications to achieve significant performance improvements.
+
+Steps for Matrix Multiplication using CUDA:
+
+Matrix Initialization: Initialize the matrices that you want to multiply by allocating memory and setting their values.
+
+Memory Allocation: Allocate memory for the matrices on both the host (CPU) and the device (GPU).
+
+Data Transfer: Transfer the matrix data between the host and the device using the cudaMemcpy function.
+
+Kernel Launch: Launch a CUDA kernel, which is a GPU function, to perform the matrix multiplication. Each thread in the kernel will compute one element of the output matrix. Specify the number of blocks and threads to use.
+
+Device Synchronization: Synchronize the device to ensure that all kernel executions have completed before proceeding. Use the cudaDeviceSynchronize function.
+
+Data Retrieval: Retrieve the computed result from the device to the host using the cudaMemcpy function.
+
+Memory Deallocation: Deallocate the memory that was allocated on both the host and the device using the free function for the host memory and the cudaFree function for the device memory.
